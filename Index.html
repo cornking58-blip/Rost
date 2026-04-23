@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МВЗ-13 Елизаветино — Агродашборд 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #0a0f0d;
+  --surface: #111a14;
+  --surface2: #162019;
+  --surface3: #1c2a20;
+  --border: #1f3026;
+  --accent: #6abf4b;
+  --accent2: #86efac;
+  --muted: #4d6b56;
+  --text: #d4edda;
+  --textmuted: #6b8f73;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: var(--surface);
+}
+.header-logos { display: flex; align-items: center; gap: 20px; }
+.logo-aeg img { height: 44px; width: auto; }
+.logo-divider { width: 1px; height: 36px; background: var(--border); }
+.logo-baikov {
+  border: 1.5px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.logo-baikov span { opacity: 0.55; font-weight: 300; }
+.header-title { flex: 1; text-align: center; }
+.header-title h1 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+.header-title .subtitle { font-size: 10px; color: var(--textmuted); margin-top: 3px; letter-spacing: 0.06em; }
+
+/* STATS */
+.stats-row {
+  display: flex; gap: 1px; background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat-card { flex: 1; background: var(--surface); padding: 12px 18px; }
+.stat-label { font-size: 9px; color: var(--textmuted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+.stat-value { font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 600; color: var(--accent); }
+.stat-sub { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+/* LAYOUT */
+.main { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 140px); }
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px 0;
+  overflow-y: auto;
+  max-height: calc(100vh - 140px);
+  position: sticky; top: 0;
+}
+.sidebar-section { padding: 0 14px; margin-bottom: 20px; }
+.sidebar-title {
+  font-size: 9px; font-weight: 500; color: var(--textmuted);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-bottom: 8px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.toggle-all-btn {
+  font-size: 9px; color: var(--accent); background: none; border: none;
+  cursor: pointer; font-family: inherit; letter-spacing: 0.05em;
+  padding: 0; transition: opacity 0.15s;
+}
+.toggle-all-btn:hover { opacity: 0.7; }
+
+/* Filter buttons — much more visible */
+.filter-btn {
+  display: flex; align-items: center; gap: 7px; width: 100%;
+  padding: 7px 9px; border-radius: 5px; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  text-align: left; transition: all 0.15s; margin-bottom: 3px;
+  border: 1.5px solid transparent;
+  background: var(--surface2); color: var(--textmuted);
+}
+.filter-btn.active {
+  border-color: var(--dot-color, #6abf4b);
+  background: color-mix(in srgb, var(--dot-color, #6abf4b) 12%, var(--surface2));
+  color: var(--text);
+}
+.filter-btn:hover { background: var(--surface3); color: var(--text); }
+.filter-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; background: var(--dot-color, #888); }
+.filter-count { margin-left: auto; font-size: 9px; color: var(--muted); }
+
+.search-bar {
+  width: 100%; padding: 7px 10px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 5px; color: var(--text);
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  outline: none; transition: border-color 0.15s;
+}
+.search-bar:focus { border-color: var(--accent); }
+.search-bar::placeholder { color: var(--muted); }
+
+/* CONTENT */
+.content { padding: 20px; overflow: auto; }
+.tabs {
+  display: flex; gap: 4px; margin-bottom: 20px;
+  border-bottom: 1px solid var(--border); padding-bottom: 0;
+}
+.tab {
+  padding: 8px 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  background: transparent; border: none; color: var(--textmuted); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* === GANTT === */
+.gantt-controls {
+  display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;
+}
+.gantt-month-btn {
+  padding: 5px 11px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  color: var(--textmuted); cursor: pointer; border-radius: 4px;
+  transition: all 0.15s;
+}
+.gantt-month-btn:hover { border-color: var(--muted); color: var(--text); }
+.gantt-month-btn.active { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface2)); }
+.gantt-all-btn {
+  padding: 5px 11px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  background: transparent; border: 1.5px solid var(--border);
+  color: var(--textmuted); cursor: pointer; border-radius: 4px;
+  margin-left: auto; transition: all 0.15s;
+}
+.gantt-all-btn.active { border-color: var(--accent); color: var(--accent); }
+.gantt-all-btn:hover { border-color: var(--muted); color: var(--text); }
+
+.gantt-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+.gantt-header { display: flex; background: var(--surface2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+.gantt-label-col { min-width: 280px; max-width: 280px; padding: 9px 14px; font-size: 9px; color: var(--textmuted); letter-spacing: 0.1em; text-transform: uppercase; border-right: 1px solid var(--border); }
+.gantt-months { flex: 1; display: flex; }
+.gantt-month { border-right: 1px solid var(--border); padding: 9px 6px; font-size: 9px; color: var(--textmuted); text-align: center; white-space: nowrap; }
+.gantt-month.current { color: var(--accent); }
+.gantt-row { display: flex; border-bottom: 1px solid var(--border); min-height: 32px; align-items: center; transition: background 0.1s; }
+.gantt-row:hover { background: var(--surface2); }
+.gantt-row-label { min-width: 280px; max-width: 280px; padding: 5px 14px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 1px; }
+.gantt-row-op { font-size: 10px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gantt-row-culture { font-size: 9px; color: var(--textmuted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gantt-timeline { flex: 1; position: relative; height: 32px; }
+.gantt-bar {
+  position: absolute; height: 16px; top: 8px; border-radius: 3px;
+  opacity: 0.85; transition: opacity 0.15s, transform 0.15s;
+  cursor: pointer; min-width: 3px;
+}
+.gantt-bar:hover { opacity: 1; transform: scaleY(1.2); z-index: 2; }
+.gantt-group-header { display: flex; background: var(--surface2); border-bottom: 1px solid var(--border); min-height: 24px; align-items: center; }
+.gantt-group-label { min-width: 280px; max-width: 280px; padding: 3px 14px; font-family: 'Unbounded', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; border-right: 1px solid var(--border); }
+.gantt-group-line { flex: 1; height: 1px; background: var(--border); margin: 0 8px; }
+
+/* Today marker */
+.today-line { position: absolute; top: 0; bottom: 0; width: 1px; background: #ef4444; opacity: 0.5; z-index: 5; pointer-events: none; }
+
+/* === PESTICIDE VIEW === */
+.pest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.pest-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.15s;
+}
+.pest-card:hover { transform: translateY(-1px); }
+.pest-top-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.pest-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; gap: 8px; }
+.pest-card-title { font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.pest-type-badge { font-size: 8px; padding: 2px 7px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+.pest-card-culture { font-size: 10px; margin-bottom: 12px; }
+.pest-timeline-mini { height: 6px; background: var(--surface2); border-radius: 3px; margin-bottom: 10px; position: relative; overflow: hidden; }
+.pest-bar-mini { position: absolute; height: 100%; border-radius: 3px; }
+.pest-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--textmuted); }
+.pest-meta strong { color: var(--text); }
+.pest-machine { font-size: 9px; color: var(--textmuted); margin-top: 6px; border-top: 1px solid var(--border); padding-top: 6px; }
+
+/* === CALENDAR === */
+.calendar-controls { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+.cal-nav {
+  background: var(--surface); border: 1.5px solid var(--border); color: var(--text);
+  padding: 6px 14px; border-radius: 4px; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; transition: all 0.15s;
+}
+.cal-nav:hover { border-color: var(--accent); color: var(--accent); }
+.cal-month-label { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 600; color: var(--accent); flex: 1; text-align: center; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-day-header { padding: 6px; text-align: center; font-size: 9px; color: var(--textmuted); letter-spacing: 0.1em; text-transform: uppercase; }
+.cal-day { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; min-height: 90px; padding: 5px; transition: border-color 0.15s; }
+.cal-day:hover { border-color: var(--muted); }
+.cal-day.other-month { opacity: 0.25; }
+.cal-day.has-events { border-color: var(--surface3); }
+.cal-day-num { font-size: 10px; color: var(--textmuted); margin-bottom: 3px; font-weight: 500; }
+.cal-day.has-events .cal-day-num { color: var(--accent); }
+.cal-event {
+  font-size: 8px; padding: 2px 5px; border-radius: 2px; margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff;
+  cursor: pointer; transition: opacity 0.1s;
+}
+.cal-event:hover { opacity: 0.85; }
+.cal-more { font-size: 8px; color: var(--textmuted); padding: 1px 2px; }
+
+/* === TOOLTIP === */
+.tooltip {
+  position: fixed; background: #071009;
+  border: 1px solid var(--accent); border-radius: 8px;
+  padding: 12px 16px; font-size: 11px; pointer-events: none;
+  z-index: 9999; min-width: 220px; max-width: 300px; display: none;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+}
+.tooltip-title { font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 600; color: var(--accent); margin-bottom: 10px; line-height: 1.3; }
+.tooltip-row { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 4px; color: var(--textmuted); font-size: 10px; }
+.tooltip-row span:last-child { color: var(--text); text-align: right; max-width: 160px; }
+.tooltip-sep { height: 1px; background: var(--border); margin: 6px 0; }
+
+/* LEGEND */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 20px; background: var(--surface); border-top: 1px solid var(--border); }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--textmuted); }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+/* EMPTY */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--textmuted); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logos">
+    <div class="logo-aeg">
+      <img src="data:image/png;base64,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" alt="Агро Эксперт Груп">
+    </div>
+    <div class="logo-divider"></div>
+    <div class="logo-baikov">b<span>AI</span>kov</div>
+  </div>
+  <div class="header-title">
+    <h1>МВЗ-13 Елизаветино — Производственный план 2026</h1>
+    <div class="subtitle">Агродашборд · Диаграмма Ганта · Защита растений · Календарь</div>
+  </div>
+  <div style="width:200px"></div>
+</div>
+
+<div class="stats-row" id="statsRow"></div>
+
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <input class="search-bar" id="searchInput" placeholder="🔍 Поиск операции..." oninput="applyFilters()">
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">
+        Культура
+        <button class="toggle-all-btn" onclick="toggleAll('culture')">вкл/выкл все</button>
+      </div>
+      <div id="cultureFilters"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">
+        Категория работ
+        <button class="toggle-all-btn" onclick="toggleAll('category')">вкл/выкл все</button>
+      </div>
+      <div id="categoryFilters"></div>
+    </div>
+  </aside>
+
+  <div style="display:flex; flex-direction:column; min-width:0;">
+    <div class="content">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('gantt',this)">📅 Диаграмма Ганта</button>
+        <button class="tab" onclick="switchTab('pesticide',this)">🌿 Защита растений</button>
+        <button class="tab" onclick="switchTab('calendar',this)">🗓 Календарь</button>
+      </div>
+
+      <!-- GANTT VIEW -->
+      <div class="view active" id="view-gantt">
+        <div class="gantt-controls" id="ganttMonthBtns"></div>
+        <div class="gantt-wrap" id="ganttContainer"></div>
+      </div>
+
+      <!-- PESTICIDE VIEW -->
+      <div class="view" id="view-pesticide">
+        <div class="pest-grid" id="pesticideGrid"></div>
+      </div>
+
+      <!-- CALENDAR VIEW -->
+      <div class="view" id="view-calendar">
+        <div class="calendar-controls">
+          <button class="cal-nav" onclick="prevMonth()">← Пред.</button>
+          <div class="cal-month-label" id="calMonthLabel"></div>
+          <button class="cal-nav" onclick="nextMonth()">След. →</button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+    </div>
+
+    <div class="legend" id="legend"></div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ===== DATA =====
+const RAW_DATA = [{"op":"Боронование весеннее","culture":"Пшеница яровая 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":1.0,"days":4,"done":4.0,"start":"2026-04-06","end":"2026-04-09","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Пшеница яровая 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8335R гос. номер 1580УН58","daily":1.0,"days":4,"done":4.0,"start":"2026-04-06","end":"2026-04-09","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Пшеница яровая 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8430 гос. номер 1561УН58","daily":1.0,"days":4,"done":4.0,"start":"2026-04-06","end":"2026-04-09","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Пшеница яровая 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 1579УН58","daily":1.0,"days":5,"done":5.0,"start":"2026-04-06","end":"2026-04-10","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Пшеница яровая 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8285R гос. номер 1073УН58","daily":1.0,"days":4,"done":4.0,"start":"2026-04-06","end":"2026-04-09","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":1.0,"days":6,"done":6.0,"start":"2026-04-10","end":"2026-04-15","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8335R гос. номер 1580УН58","daily":1.0,"days":7,"done":7.0,"start":"2026-04-10","end":"2026-04-16","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8430 гос. номер 1561УН58","daily":1.0,"days":7,"done":7.0,"start":"2026-04-10","end":"2026-04-16","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 1579УН58","daily":1.0,"days":7,"done":7.0,"start":"2026-04-11","end":"2026-04-17","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8285R гос. номер 1073УН58","daily":1.0,"days":6,"done":6.0,"start":"2026-04-10","end":"2026-04-15","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Лен 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":120.0,"days":2,"done":240.0,"start":"2026-04-16","end":"2026-04-17","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Лен 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8335R гос. номер 1580УН58","daily":0.0,"days":1,"done":0.0,"start":"2026-04-17","end":"2026-04-17","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Лен 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8430 гос. номер 1561УН58","daily":0.0,"days":1,"done":0.0,"start":"2026-04-17","end":"2026-04-17","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Лен 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 1579УН58","daily":0.0,"days":1,"done":0.0,"start":"2026-04-18","end":"2026-04-18","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Лен 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8285R гос. номер 1073УН58","daily":0.0,"days":2,"done":0.0,"start":"2026-04-16","end":"2026-04-17","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Соя 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":1.0,"days":2,"done":2.0,"start":"2026-04-18","end":"2026-04-19","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Соя 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8335R гос. номер 1580УН58","daily":1.0,"days":1,"done":1.0,"start":"2026-04-18","end":"2026-04-18","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Соя 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8430 гос. номер 1561УН58","daily":1.0,"days":2,"done":2.0,"start":"2026-04-18","end":"2026-04-19","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Соя 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 1579УН58","daily":1.0,"days":1,"done":1.0,"start":"2026-04-19","end":"2026-04-19","category":"Почвообработка"},{"op":"Боронование весеннее","culture":"Соя 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8285R гос. номер 1073УН58","daily":1.0,"days":2,"done":2.0,"start":"2026-04-18","end":"2026-04-19","category":"Почвообработка"},{"op":"Культивация предпосевная до 6 см","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8430 гос. номер 1561УН58","daily":1.0,"days":3,"done":3.0,"start":"2026-04-23","end":"2026-04-25","category":"Сев"},{"op":"Внесение ЖКУ 100 кг/га","culture":"Подсолнечник 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 0872УН58","daily":1.0,"days":18,"done":18.0,"start":"2026-04-26","end":"2026-05-13","category":"Удобрения"},{"op":"Внесение КАС 100 кг/га","culture":"Пшеница озимая 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 0872УН58","daily":1.0,"days":11,"done":11.0,"start":"2026-05-14","end":"2026-05-24","category":"Удобрения"},{"op":"Внесение МУ Селитра 100 кг/га","culture":"Лен 2026","tech_type":"Трактор_легкий","machine":"МТЗ 1221.2 гос. номер 1071УН58","daily":0.0,"days":2,"done":0.0,"start":"2026-04-28","end":"2026-04-29","category":"Удобрения"},{"op":"Внесение МУ Селитра 100 кг/га","culture":"Соя 2026","tech_type":"Трактор_легкий","machine":"МТЗ 1221.2 гос. номер 1071УН58","daily":1.0,"days":2,"done":2.0,"start":"2026-07-04","end":"2026-07-05","category":"Удобрения"},{"op":"Внесение МУ Селитра 120 кг/га","culture":"Пшеница озимая 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":6,"done":6.0,"start":"2026-04-01","end":"2026-04-06","category":"Удобрения"},{"op":"Внесение МУ Селитра 150 кг/га","culture":"Пшеница яровая 2026","tech_type":"Трактор_легкий","machine":"МТЗ 1221.2 гос. номер 1063УН58","daily":1.0,"days":10,"done":10.0,"start":"2026-04-19","end":"2026-04-28","category":"Удобрения"},{"op":"Внесение МУ Селитра 150 кг/га","culture":"Подсолнечник 2026","tech_type":"Трактор_легкий","machine":"МТЗ 1221.2 гос. номер 1063УН58","daily":1.0,"days":15,"done":15.0,"start":"2026-04-29","end":"2026-05-13","category":"Удобрения"},{"op":"Вспашка зяби 25-30 см","culture":"Зябь 2027","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":1.0,"days":20,"done":20.0,"start":"2026-10-05","end":"2026-10-24","category":"Почвообработка"},{"op":"Сев подсолнечника с МУ","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 1579УН58","daily":1.0,"days":19,"done":19.0,"start":"2026-04-26","end":"2026-05-14","category":"Сев"},{"op":"Вспашка зяби 25-30 см","culture":"Зябь 2027","tech_type":"Трактор_тяжелый","machine":"John Deere 8430 гос. номер 1561УН58","daily":1.0,"days":13,"done":13.0,"start":"2026-09-14","end":"2026-09-26","category":"Почвообработка"},{"op":"Глубокорыхление зяби 30-35 см","culture":"Зябь 2027","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2398УН58","daily":1.0,"days":70,"done":70.0,"start":"2026-08-18","end":"2026-10-26","category":"Почвообработка"},{"op":"Глубокорыхление зяби 30-35 см","culture":"Зябь 2027","tech_type":"Трактор_тяжелый","machine":"John Deere 8335R гос. номер 1580УН58","daily":1.0,"days":70,"done":70.0,"start":"2026-07-25","end":"2026-10-02","category":"Почвообработка"},{"op":"Десикация подсолнечника","culture":"Подсолнечник 2026","tech_type":"Авиация","machine":"Самолет","daily":400.0,"days":6,"done":2400.0,"start":"2026-09-09","end":"2026-09-14","category":"Десикация"},{"op":"Десикация льна","culture":"Лен 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":0.0,"days":6,"done":0.0,"start":"2026-08-20","end":"2026-08-25","category":"Десикация"},{"op":"Десикация сои","culture":"Соя 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":5,"done":5.0,"start":"2026-09-20","end":"2026-09-24","category":"Десикация"},{"op":"Десикация яровой","culture":"Пшеница яровая 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 0872УН58","daily":1.0,"days":4,"done":4.0,"start":"2026-07-20","end":"2026-07-23","category":"Десикация"},{"op":"Дискование зяби 15-20 см","culture":"Зябь 2027","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":1.0,"days":23,"done":23.0,"start":"2026-08-01","end":"2026-08-23","category":"Почвообработка"},{"op":"Дискование пара 6-10 см - 1-е","culture":"Пар 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":1.0,"days":25,"done":25.0,"start":"2026-05-15","end":"2026-06-08","category":"Почвообработка"},{"op":"Дискование пара 6-10 см - 2-е","culture":"Пар 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2398УН58","daily":1.0,"days":25,"done":25.0,"start":"2026-06-15","end":"2026-07-09","category":"Почвообработка"},{"op":"Дискование предпосевное 6-10 см","culture":"Пшеница яровая 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2398УН58","daily":1.0,"days":5,"done":5.0,"start":"2026-04-11","end":"2026-04-15","category":"Сев"},{"op":"Культивация пара 6-10 см - 1-я","culture":"Пар 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":1.0,"days":9,"done":9.0,"start":"2026-07-10","end":"2026-07-18","category":"Почвообработка"},{"op":"Культивация пара 6-10 см - 2-я","culture":"Пар 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2399УН58","daily":1.0,"days":14,"done":14.0,"start":"2026-08-24","end":"2026-09-06","category":"Почвообработка"},{"op":"Культивация предпосевная до 6 см","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8285R гос. номер 1073УН58","daily":1.0,"days":13,"done":13.0,"start":"2026-04-23","end":"2026-05-05","category":"Сев"},{"op":"Культивация предпосевная до 6 см","culture":"Лен 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8285R гос. номер 1073УН58","daily":110.0,"days":5,"done":550.0,"start":"2026-05-07","end":"2026-05-11","category":"Сев"},{"op":"Культивация предпосевная до 6 см","culture":"Соя 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8285R гос. номер 1073УН58","daily":1.0,"days":5,"done":5.0,"start":"2026-05-12","end":"2026-05-16","category":"Сев"},{"op":"Лущение стерни","culture":"Зябь 2027","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 2398УН58","daily":1.0,"days":29,"done":29.0,"start":"2026-07-20","end":"2026-08-17","category":"Почвообработка"},{"op":"Опрыскивание озимой гербицидное","culture":"Пшеница озимая 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":9,"done":9.0,"start":"2026-04-30","end":"2026-05-08","category":"Гербициды"},{"op":"Опрыскивание озимой противозлаковое","culture":"Пшеница озимая 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":1,"done":1.0,"start":"2026-05-09","end":"2026-05-09","category":"Противозлак."},{"op":"Опрыскивание озимой фунгицидное","culture":"Пшеница озимая 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":9,"done":9.0,"start":"2026-05-10","end":"2026-05-18","category":"Фунгициды"},{"op":"Опрыскивание пара","culture":"Пар 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":18,"done":18.0,"start":"2026-08-01","end":"2026-08-18","category":"Опрыскивание"},{"op":"Опрыскивание подсолнечника гербицидное","culture":"Подсолнечник 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":24,"done":24.0,"start":"2026-05-19","end":"2026-06-11","category":"Гербициды"},{"op":"Опрыскивание подсолнечника глифосат","culture":"Подсолнечник 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":10,"done":10.0,"start":"2026-04-20","end":"2026-04-29","category":"Глифосат"},{"op":"Опрыскивание подсолнечника инсектицидное","culture":"Подсолнечник 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":12,"done":12.0,"start":"2026-06-15","end":"2026-06-26","category":"Инсектициды"},{"op":"Опрыскивание подсолнечника противозлаковое","culture":"Подсолнечник 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":3,"done":3.0,"start":"2026-06-12","end":"2026-06-14","category":"Противозлак."},{"op":"Опрыскивание подсолнечника фунгицидное","culture":"Подсолнечник 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":27,"done":27.0,"start":"2026-06-25","end":"2026-07-21","category":"Фунгициды"},{"op":"Опрыскивание сои гербицидное","culture":"Соя 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 0872УН58","daily":1.0,"days":6,"done":6.0,"start":"2026-06-22","end":"2026-06-27","category":"Гербициды"},{"op":"Опрыскивание сои глифосат","culture":"Соя 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":3,"done":3.0,"start":"2026-04-30","end":"2026-05-02","category":"Глифосат"},{"op":"Опрыскивание сои инсектицидное","culture":"Соя 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":3,"done":3.0,"start":"2026-07-09","end":"2026-07-11","category":"Инсектициды"},{"op":"Опрыскивание сои почвенник","culture":"Соя 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":1,"done":1.0,"start":"2026-05-06","end":"2026-05-06","category":"Опрыскивание"},{"op":"Опрыскивание сои противозлак","culture":"Соя 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":3,"done":3.0,"start":"2026-06-27","end":"2026-06-29","category":"Противозлак."},{"op":"Опрыскивание сои фунгицидное","culture":"Соя 2026","tech_type":"Самоходный_опрыскиватель","machine":"John Deere 4730 гос. номер 1072УН58","daily":1.0,"days":2,"done":2.0,"start":"2026-07-02","end":"2026-07-03","category":"Фунгициды"},{"op":"Опрыскивание яровой гербицидное","culture":"Пшеница яровая 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":18,"done":18.0,"start":"2026-05-18","end":"2026-06-04","category":"Гербициды"},{"op":"Опрыскивание льна глифосат","culture":"Лен 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":0.0,"days":3,"done":0.0,"start":"2026-04-23","end":"2026-04-25","category":"Глифосат"},{"op":"Опрыскивание льна гербицидное","culture":"Лен 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":0.0,"days":6,"done":0.0,"start":"2026-06-15","end":"2026-06-20","category":"Гербициды"},{"op":"Опрыскивание льна противозлак","culture":"Лен 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 0872УН58","daily":0.0,"days":3,"done":0.0,"start":"2026-06-12","end":"2026-06-14","category":"Противозлак."},{"op":"Опрыскивание яровой глифосат","culture":"Пшеница яровая 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":8,"done":8.0,"start":"2026-04-15","end":"2026-04-22","category":"Глифосат"},{"op":"Опрыскивание яровой против падалицы","culture":"Пшеница яровая 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":9,"done":9.0,"start":"2026-06-06","end":"2026-06-14","category":"Опрыскивание"},{"op":"Опрыскивание яровой противозлаковое","culture":"Пшеница яровая 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":1,"done":1.0,"start":"2026-06-05","end":"2026-06-05","category":"Противозлак."},{"op":"Опрыскивание яровой фунгицидное","culture":"Пшеница яровая 2026","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 0872УН58","daily":1.0,"days":18,"done":18.0,"start":"2026-05-25","end":"2026-06-11","category":"Фунгициды"},{"op":"Прикатывание посевов озимой","culture":"Пшеница озимая 2027","tech_type":"Трактор_легкий","machine":"МТЗ 1221.2 гос. номер 1071УН58","daily":1.0,"days":11,"done":11.0,"start":"2026-09-03","end":"2026-09-13","category":"Сев"},{"op":"Прикатывание посевов сои","culture":"Соя 2026","tech_type":"Трактор_легкий","machine":"МТЗ 1025 гос. номер 2381УН58","daily":1.0,"days":5,"done":5.0,"start":"2026-05-05","end":"2026-05-09","category":"Сев"},{"op":"Сев озимой с МУ","culture":"Пшеница озимая 2027","tech_type":"Трактор_тяжелый","machine":"John Deere 8430 гос. номер 1561УН58","daily":1.0,"days":12,"done":12.0,"start":"2026-09-01","end":"2026-09-12","category":"Сев"},{"op":"Сев подсолнечника без МУ","culture":"Подсолнечник 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8335R гос. номер 1580УН58","daily":1.0,"days":20,"done":20.0,"start":"2026-04-26","end":"2026-05-15","category":"Сев"},{"op":"Сев льна с МУ","culture":"Лен 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8335RT гос. номер 1564УН58","daily":0.0,"days":5,"done":0.0,"start":"2026-04-29","end":"2026-05-03","category":"Сев"},{"op":"Сев сои с МУ","culture":"Соя 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8335RT гос. номер 1564УН58","daily":1.0,"days":6,"done":6.0,"start":"2026-05-04","end":"2026-05-09","category":"Сев"},{"op":"Сев яровой с МУ","culture":"Пшеница яровая 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8335RT гос. номер 1564УН58","daily":1.0,"days":12,"done":12.0,"start":"2026-04-17","end":"2026-04-28","category":"Сев"},{"op":"Уборка озимой","culture":"Пшеница озимая 2026","tech_type":"Комбайн","machine":"Claas TUCANO 450 гос. номер 1604УН58","daily":1.0,"days":13,"done":13.0,"start":"2026-07-20","end":"2026-08-01","category":"Уборка"},{"op":"Уборка озимой (наемные)","culture":"Пшеница озимая 2026","tech_type":"Комбайн","machine":"Комбайн наемный","daily":60.0,"days":13,"done":780.0,"start":"2026-07-20","end":"2026-08-01","category":"Уборка"},{"op":"Уборка подсолнечника","culture":"Подсолнечник 2026","tech_type":"Комбайн","machine":"Claas LEXION 670 гос. номер 0603УН58","daily":1.0,"days":25,"done":25.0,"start":"2026-09-20","end":"2026-10-14","category":"Уборка"},{"op":"Уборка подсолнечника (наемные)","culture":"Подсолнечник 2026","tech_type":"Комбайн","machine":"Комбайн наемный","daily":100.0,"days":23,"done":2300.0,"start":"2026-09-20","end":"2026-10-12","category":"Уборка"},{"op":"Уборка сои (наемные)","culture":"Соя 2026","tech_type":"Комбайн","machine":"Комбайн наемный","daily":120.0,"days":10,"done":1200.0,"start":"2026-09-01","end":"2026-09-10","category":"Уборка"},{"op":"Уборка льна (наемные)","culture":"Лен 2026","tech_type":"Комбайн","machine":"Комбайн наемный","daily":60.0,"days":16,"done":960.0,"start":"2026-08-29","end":"2026-09-13","category":"Уборка"},{"op":"Уборка яровой","culture":"Пшеница яровая 2026","tech_type":"Комбайн","machine":"Claas TUCANO 450 гос. номер 1604УН58","daily":1.0,"days":14,"done":14.0,"start":"2026-08-02","end":"2026-08-15","category":"Уборка"},{"op":"Уборка яровой (наемные)","culture":"Пшеница яровая 2026","tech_type":"Комбайн","machine":"Комбайн наемный","daily":120.0,"days":14,"done":1680.0,"start":"2026-08-02","end":"2026-08-15","category":"Уборка"},{"op":"Опрыскивание зяби","culture":"Зябь 2027","tech_type":"Самоходный_опрыскиватель_разбрасыватель","machine":"ТУМАН-3 гос. номер 1069УН58","daily":1.0,"days":7,"done":7.0,"start":"2026-09-01","end":"2026-09-07","category":"Опрыскивание"},{"op":"Затарка рукавов","culture":"Пшеница озимая 2026","tech_type":"Трактор_тяжелый","machine":"John Deere 8310R гос. номер 1579УН58","daily":1.0,"days":12,"done":12.0,"start":"2026-07-20","end":"2026-07-31","category":"Прочее"},{"op":"Затарка рукавов","culture":"Пшеница яровая 2026","tech_type":"Трактор_легкий","machine":"МТЗ 1221.2 гос. номер 1063УН58","daily":800.0,"days":8,"done":6400.0,"start":"2026-08-02","end":"2026-08-09","category":"Прочее"},{"op":"Затарка рукавов","culture":"Подсолнечник 2026","tech_type":"Трактор_легкий","machine":"МТЗ 1221.2 гос. номер 1063УН58","daily":400.0,"days":17,"done":6800.0,"start":"2026-09-25","end":"2026-10-11","category":"Прочее"},{"op":"Работа на току","culture":"Пшеница озимая 2026","tech_type":"Погрузчик_телескопический","machine":"Manitou MLT-X 735 TLSU гос. номер 1578УН58","daily":1.0,"days":12,"done":12.0,"start":"2026-07-20","end":"2026-07-31","category":"Прочее"},{"op":"Работа на току","culture":"Пшеница яровая 2026","tech_type":"Погрузчик_телескопический","machine":"Manitou MLT-X 735 TLSU гос. номер 1578УН58","daily":1.0,"days":30,"done":30.0,"start":"2026-08-02","end":"2026-08-31","category":"Прочее"},{"op":"Перевозка ГП","culture":"Пшеница озимая 2026","tech_type":"Грузовой_автомобиль","machine":"КАМАЗ 658901-40L гос. номер Т 568 ЕК 58","daily":1.0,"days":77,"done":77.0,"start":"2026-07-20","end":"2026-10-04","category":"Логистика"},{"op":"Подвоз семян","culture":"Пшеница яровая 2026","tech_type":"Грузовой_автомобиль","machine":"КАМАЗ 6520-63 гос. номер С 705 ХО 58","daily":1.0,"days":14,"done":14.0,"start":"2026-04-17","end":"2026-04-30","category":"Логистика"},{"op":"Подвоз семян","culture":"Подсолнечник 2026","tech_type":"Грузовой_автомобиль","machine":"Камаз наем","daily":1.0,"days":6,"done":6.0,"start":"2026-04-10","end":"2026-04-15","category":"Логистика"},{"op":"Подвоз удобрений","culture":"Пшеница яровая 2026","tech_type":"Грузовой_автомобиль","machine":"КАМАЗ 552907 гос. номер Т 031 ЕК 58","daily":1.0,"days":10,"done":10.0,"start":"2026-04-19","end":"2026-04-28","category":"Логистика"},{"op":"Подвоз воды","culture":"Пшеница яровая 2026","tech_type":"Грузовой_автомобиль","machine":"КАМАЗ 552900 гос. номер С 961 ХК 58","daily":1.0,"days":2,"done":2.0,"start":"2026-04-15","end":"2026-04-16","category":"Логистика"}];
+
+// ===== CONFIG =====
+const CULTURE_COLORS = {
+  'Пшеница яровая 2026':'#fbbf24','Пшеница озимая 2026':'#f59e0b',
+  'Пшеница озимая 2027':'#d97706','Подсолнечник 2026':'#f97316',
+  'Соя 2026':'#a78bfa','Лен 2026':'#67e8f9',
+  'Пар 2026':'#94a3b8','Зябь 2027':'#6b7280',
+};
+const CAT_COLORS = {
+  'Гербициды':'#ef4444','Фунгициды':'#8b5cf6','Инсектициды':'#f59e0b',
+  'Глифосат':'#06b6d4','Десикация':'#ec4899','Противозлак.':'#84cc16',
+  'Опрыскивание':'#14b8a6','Почвообработка':'#92816c','Сев':'#4ade80',
+  'Уборка':'#facc15','Удобрения':'#60a5fa','Логистика':'#94a3b8','Прочее':'#6b7280',
+};
+const PESTICIDE_CATS = new Set(['Гербициды','Фунгициды','Инсектициды','Глифосат','Десикация','Противозлак.','Опрыскивание']);
+const MONTH_NAMES_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTH_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+
+// Project spans April–December 2026
+const PROJ_MONTHS = [3,4,5,6,7,8,9,10,11]; // 0-indexed months (Apr=3...Dec=11)
+const YEAR = 2026;
+
+// ===== STATE =====
+let selectedCultures = new Set();
+let selectedCategories = new Set();
+let searchText = '';
+let ganttMonth = null; // null = all months
+let calendarMonth = new Date(2026, 3);
+
+// === DATE HELPERS ===
+function daysBetween(a, b) { return Math.round((b - a) / 86400000); }
+
+// For gantt: either full year view or single-month view
+function getGanttRange() {
+  if (ganttMonth === null) {
+    return { start: new Date(2026,3,1), end: new Date(2026,11,31) };
+  }
+  return { start: new Date(YEAR, ganttMonth, 1), end: new Date(YEAR, ganttMonth+1, 0) };
+}
+
+function barGeometry(recStart, recEnd, rangeStart, rangeEnd) {
+  const total = daysBetween(rangeStart, rangeEnd) + 1;
+  const s = new Date(recStart), e = new Date(recEnd);
+  const clampS = s < rangeStart ? rangeStart : s;
+  const clampE = e > rangeEnd ? rangeEnd : e;
+  if (clampS > rangeEnd || clampE < rangeStart) return null;
+  const left = daysBetween(rangeStart, clampS) / total * 100;
+  const width = Math.max(0.4, (daysBetween(clampS, clampE) + 1) / total * 100);
+  return { left: left.toFixed(3)+'%', width: width.toFixed(3)+'%' };
+}
+
+// ===== INIT =====
+function init() {
+  RAW_DATA.forEach(r => { selectedCultures.add(r.culture); selectedCategories.add(r.category); });
+  buildStats();
+  buildFilters();
+  buildLegend();
+  buildGanttMonthBtns();
+  applyFilters();
+  buildCalendar();
+}
+
+function buildStats() {
+  const ops_unique = new Set(RAW_DATA.map(r=>r.op)).size;
+  const pest = RAW_DATA.filter(r=>PESTICIDE_CATS.has(r.category)).length;
+  const cultures = new Set(RAW_DATA.map(r=>r.culture)).size;
+  const machines = new Set(RAW_DATA.map(r=>r.machine).filter(Boolean)).size;
+  document.getElementById('statsRow').innerHTML = [
+    {label:'Всего операций',value:RAW_DATA.length,sub:`${ops_unique} уникальных типов`},
+    {label:'Культуры',value:cultures,sub:'видов'},
+    {label:'Техника',value:machines,sub:'единиц/наименований'},
+    {label:'Операций СЗР',value:pest,sub:'обработки посевов'},
+    {label:'Период',value:'Апр–Дек',sub:'2026 год'},
+  ].map(s=>`<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div><div class="stat-sub">${s.sub}</div></div>`).join('');
+}
+
+function buildFilters() {
+  const cultures = [...new Set(RAW_DATA.map(r=>r.culture))].sort();
+  const cats = [...new Set(RAW_DATA.map(r=>r.category))].sort();
+  document.getElementById('cultureFilters').innerHTML = cultures.map(c=>{
+    const cnt = RAW_DATA.filter(r=>r.culture===c).length;
+    const col = CULTURE_COLORS[c]||'#888';
+    return `<button class="filter-btn active" style="--dot-color:${col}" data-type="culture" data-value="${c}" onclick="toggleFilter('culture','${c}',this)">
+      <span class="filter-dot"></span>${c.replace(/ 20\d\d/,'')} <span class="filter-count">${cnt}</span></button>`;
+  }).join('');
+  document.getElementById('categoryFilters').innerHTML = cats.map(c=>{
+    const cnt = RAW_DATA.filter(r=>r.category===c).length;
+    const col = CAT_COLORS[c]||'#888';
+    return `<button class="filter-btn active" style="--dot-color:${col}" data-type="category" data-value="${c}" onclick="toggleFilter('category','${c}',this)">
+      <span class="filter-dot"></span>${c} <span class="filter-count">${cnt}</span></button>`;
+  }).join('');
+}
+
+function buildLegend() {
+  document.getElementById('legend').innerHTML =
+    Object.entries(CULTURE_COLORS).map(([c,col])=>`<div class="legend-item"><div class="legend-dot" style="background:${col}"></div>${c}</div>`).join('')+'<div style="flex:1"></div>'+
+    Object.entries(CAT_COLORS).filter(([c])=>PESTICIDE_CATS.has(c)).map(([c,col])=>`<div class="legend-item"><div class="legend-dot" style="background:${col};border-radius:2px"></div>${c}</div>`).join('');
+}
+
+function buildGanttMonthBtns() {
+  const btns = document.getElementById('ganttMonthBtns');
+  let html = `<button class="gantt-all-btn active" id="ganttBtnAll" onclick="setGanttMonth(null,this)">Все месяцы</button>`;
+  PROJ_MONTHS.forEach(m=>{
+    html += `<button class="gantt-month-btn" id="ganttBtn${m}" onclick="setGanttMonth(${m},this)">${MONTH_SHORT[m]}</button>`;
+  });
+  btns.innerHTML = html;
+}
+
+function setGanttMonth(m, btn) {
+  ganttMonth = m;
+  document.querySelectorAll('.gantt-month-btn, .gantt-all-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function toggleFilter(type, value, btn) {
+  const set = type==='culture' ? selectedCultures : selectedCategories;
+  if (set.has(value)) { set.delete(value); btn.classList.remove('active'); }
+  else { set.add(value); btn.classList.add('active'); }
+  applyFilters();
+}
+
+function toggleAll(type) {
+  const selector = type==='culture' ? '[data-type="culture"]' : '[data-type="category"]';
+  const set = type==='culture' ? selectedCultures : selectedCategories;
+  const btns = document.querySelectorAll(selector);
+  const allActive = [...btns].every(b=>b.classList.contains('active'));
+  btns.forEach(b=>{
+    const v = b.dataset.value;
+    if (allActive) { set.delete(v); b.classList.remove('active'); }
+    else { set.add(v); b.classList.add('active'); }
+  });
+  applyFilters();
+}
+
+function getFiltered() {
+  return RAW_DATA.filter(r=>{
+    if (selectedCultures.size && !selectedCultures.has(r.culture)) return false;
+    if (selectedCategories.size && !selectedCategories.has(r.category)) return false;
+    if (searchText && !r.op.toLowerCase().includes(searchText) && !r.culture.toLowerCase().includes(searchText)) return false;
+    return true;
+  });
+}
+
+function applyFilters() {
+  searchText = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = getFiltered();
+  buildGantt(filtered);
+  buildPesticideView(filtered);
+}
+
+// ===== GANTT =====
+function buildGantt(data) {
+  const {start: rangeStart, end: rangeEnd} = getGanttRange();
+  const totalDays = daysBetween(rangeStart, rangeEnd) + 1;
+
+  // Build month header spans within range
+  let monthHeaders = '';
+  let d = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), 1);
+  while (d <= rangeEnd) {
+    const mEnd = new Date(d.getFullYear(), d.getMonth()+1, 0);
+    const visStart = d < rangeStart ? rangeStart : d;
+    const visEnd = mEnd > rangeEnd ? rangeEnd : mEnd;
+    const days = daysBetween(visStart, visEnd) + 1;
+    const w = (days / totalDays * 100).toFixed(2)+'%';
+    monthHeaders += `<div class="gantt-month" style="width:${w};flex:none">${MONTH_SHORT[d.getMonth()]}</div>`;
+    d = new Date(d.getFullYear(), d.getMonth()+1, 1);
+  }
+
+  // Filter data to range
+  const inRange = data.filter(r=>{
+    const s = new Date(r.start), e = new Date(r.end);
+    return s <= rangeEnd && e >= rangeStart;
+  });
+
+  const catOrder = ['Гербициды','Фунгициды','Инсектициды','Глифосат','Десикация','Противозлак.','Опрыскивание','Сев','Уборка','Удобрения','Почвообработка','Логистика','Прочее'];
+  const byCategory = {};
+  inRange.forEach(r=>{ if (!byCategory[r.category]) byCategory[r.category]=[]; byCategory[r.category].push(r); });
+
+  let rowsHtml = '';
+  for (const cat of catOrder) {
+    if (!byCategory[cat]) continue;
+    const catColor = CAT_COLORS[cat]||'#888';
+    rowsHtml += `<div class="gantt-group-header">
+      <div class="gantt-group-label" style="color:${catColor}">${cat}</div>
+      <div class="gantt-group-line"></div>
+    </div>`;
+    byCategory[cat].forEach((r,i)=>{
+      const geo = barGeometry(r.start, r.end, rangeStart, rangeEnd);
+      if (!geo) return;
+      const barColor = CULTURE_COLORS[r.culture]||'#4ade80';
+      const isPest = PESTICIDE_CATS.has(r.category);
+      const border = isPest ? `border:1.5px solid ${catColor};` : '';
+      const rj = JSON.stringify(r).replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      rowsHtml += `<div class="gantt-row">
+        <div class="gantt-row-label">
+          <div class="gantt-row-op">${r.op}</div>
+          <div class="gantt-row-culture">${r.culture} · ${r.machine.split(' гос.')[0].substring(0,22)}</div>
+        </div>
+        <div class="gantt-timeline">
+          <div class="gantt-bar" style="left:${geo.left};width:${geo.width};background:${barColor};${border}"
+            onmouseover="showTip(event,'${rj.replace(/&quot;/g,'"')}')" onmouseout="hideTip()"></div>
+        </div>
+      </div>`;
+    });
+  }
+
+  if (!rowsHtml) rowsHtml = `<div style="padding:40px;text-align:center;color:var(--textmuted);font-size:12px">Нет данных по выбранным фильтрам</div>`;
+
+  document.getElementById('ganttContainer').innerHTML = `
+    <div class="gantt-header">
+      <div class="gantt-label-col">Операция / Техника</div>
+      <div class="gantt-months">${monthHeaders}</div>
+    </div>${rowsHtml}`;
+}
+
+// ===== TOOLTIP =====
+function showTip(event, rJson) {
+  let r;
+  try { r = JSON.parse(rJson); } catch(e) { return; }
+  const tip = document.getElementById('tooltip');
+  tip.innerHTML = `
+    <div class="tooltip-title">${r.op}</div>
+    <div class="tooltip-row"><span>Культура</span><span style="color:${CULTURE_COLORS[r.culture]||'#fff'}">${r.culture}</span></div>
+    <div class="tooltip-sep"></div>
+    <div class="tooltip-row"><span>Техника</span><span>${r.machine.split(' гос.')[0]}</span></div>
+    <div class="tooltip-row"><span>Тип</span><span>${r.tech_type.replace(/_/g,' ')}</span></div>
+    <div class="tooltip-sep"></div>
+    <div class="tooltip-row"><span>Начало</span><span>${r.start}</span></div>
+    <div class="tooltip-row"><span>Конец</span><span>${r.end}</span></div>
+    <div class="tooltip-row"><span>Кол-во дней</span><span>${r.days}</span></div>
+    ${r.done>0?`<div class="tooltip-row"><span>Выработка</span><span>${r.done} га/ед.</span></div>`:''}
+    <div class="tooltip-sep"></div>
+    <div class="tooltip-row"><span>Категория</span><span style="color:${CAT_COLORS[r.category]||'#888'}">${r.category}</span></div>
+  `;
+  tip.style.display = 'block';
+  positionTip(event);
+}
+function positionTip(e) {
+  const tip = document.getElementById('tooltip');
+  let x = e.clientX+18, y = e.clientY+14;
+  if (x+310>window.innerWidth) x = e.clientX-326;
+  if (y+260>window.innerHeight) y = e.clientY-260;
+  tip.style.left = x+'px'; tip.style.top = y+'px';
+}
+document.addEventListener('mousemove', e=>{ if(document.getElementById('tooltip').style.display==='block') positionTip(e); });
+function hideTip() { document.getElementById('tooltip').style.display='none'; }
+
+// ===== PESTICIDE VIEW =====
+function buildPesticideView(data) {
+  const pest = data.filter(r=>PESTICIDE_CATS.has(r.category));
+  if (!pest.length) {
+    document.getElementById('pesticideGrid').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div style="font-size:36px;margin-bottom:12px">🌿</div>Нет операций по выбранным фильтрам</div>`;
+    return;
+  }
+  const RS = new Date(2026,3,1), RE = new Date(2026,11,31);
+  const total = daysBetween(RS,RE)+1;
+  document.getElementById('pesticideGrid').innerHTML = pest.map(r=>{
+    const color = CAT_COLORS[r.category]||'#888';
+    const cColor = CULTURE_COLORS[r.culture]||'#888';
+    const s = new Date(r.start);
+    const leftP = (Math.max(0,daysBetween(RS,s))/total*100).toFixed(1);
+    const wP = Math.max(0.5, (r.days/total*100)).toFixed(1);
+    return `<div class="pest-card" style="border-color:${color}33">
+      <div class="pest-top-bar" style="background:${color}"></div>
+      <div class="pest-card-header">
+        <div class="pest-card-title">${r.op}</div>
+        <div class="pest-type-badge" style="background:${color}22;color:${color}">${r.category}</div>
+      </div>
+      <div class="pest-card-culture" style="color:${cColor}">${r.culture}</div>
+      <div class="pest-timeline-mini">
+        <div class="pest-bar-mini" style="left:${leftP}%;width:${wP}%;background:${color}"></div>
+      </div>
+      <div class="pest-meta">
+        <div><strong>${r.start}</strong> — <strong>${r.end}</strong></div>
+        <div><strong>${r.days}</strong> дней</div>
+      </div>
+      <div class="pest-machine">🚜 ${r.machine||'—'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ===== CALENDAR =====
+function buildCalendar() {
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+  document.getElementById('calMonthLabel').textContent = `${MONTH_NAMES_RU[month]} ${year}`;
+
+  const firstDay = new Date(year, month, 1);
+  let startDow = firstDay.getDay();
+  startDow = startDow===0 ? 6 : startDow-1; // Mon=0
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const prevMonthDays = new Date(year, month, 0).getDate();
+
+  const monthStart = new Date(year, month, 1);
+  const monthEnd = new Date(year, month+1, 0);
+
+  // All events overlapping this month
+  const events = RAW_DATA.filter(r=>{
+    const s = new Date(r.start), e = new Date(r.end);
+    return s <= monthEnd && e >= monthStart;
+  });
+
+  let html = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d=>`<div class="cal-day-header">${d}</div>`).join('');
+
+  // Prev month padding
+  for (let i=startDow-1; i>=0; i--) {
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${prevMonthDays-i}</div></div>`;
+  }
+
+  for (let day=1; day<=daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const dayEvts = events.filter(r=>{
+      const s = new Date(r.start), e = new Date(r.end);
+      return s <= date && e >= date;
+    });
+    const hasEvts = dayEvts.length > 0;
+
+    // Build all event pills (no limit — scrollable)
+    const evHtml = dayEvts.map(r=>{
+      const color = CAT_COLORS[r.category]||CULTURE_COLORS[r.culture]||'#888';
+      const rj = JSON.stringify(r).replace(/'/g,"\\'").replace(/"/g,"&quot;");
+      const shortName = r.op.length>18 ? r.op.substring(0,16)+'…' : r.op;
+      return `<div class="cal-event" style="background:${color}99;border-left:2px solid ${color}"
+        onmouseover="showTip(event,'${rj.replace(/&quot;/g,'"')}')" onmouseout="hideTip()"
+        title="${r.op}">${shortName}</div>`;
+    }).join('');
+
+    html += `<div class="cal-day ${hasEvts?'has-events':''}" style="${hasEvts?'overflow-y:auto;max-height:120px':''}">
+      <div class="cal-day-num">${day}</div>
+      ${evHtml}
+    </div>`;
+  }
+
+  // Fill rest
+  const totalCells = Math.ceil((startDow+daysInMonth)/7)*7;
+  for (let i=1; i<=totalCells-startDow-daysInMonth; i++) {
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
+  }
+
+  document.getElementById('calendarGrid').innerHTML = html;
+}
+
+function prevMonth() { calendarMonth.setMonth(calendarMonth.getMonth()-1); buildCalendar(); }
+function nextMonth() { calendarMonth.setMonth(calendarMonth.getMonth()+1); buildCalendar(); }
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-'+id).classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
